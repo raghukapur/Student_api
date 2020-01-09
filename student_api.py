@@ -2,7 +2,7 @@ import flask
 import sqlite3
 from flask import Flask
 from flask import request
-
+import simplejson
 
 app = Flask(__name__)
 
@@ -18,14 +18,21 @@ def get_data():
             print("\nPrinting each student record")
             student_details = []
             for row in records:
-
-                print("SID = ", row[0], )
-                print("FIRSTNAME = ", row[1])
-                print("LASTNAME  = ", row[2])
-                print("PHONE NUMBER  = ", row[3], "\n")
+                student_details = {
+                    'SID' : row[0],
+                    'FIRSTNAME' : row[1],
+                    'LASTNAME' : row[2],
+                    'PHONE NUMBER':row[3]}
+                student_details.append(student_details)    
+            #for row in records:
+            #    print("SID = ", row[0], )
+            #    print("FIRSTNAME = ", row[1])
+            #    print("LASTNAME  = ", row[2])
+            #    print("PHONE NUMBER  = ", row[3], "\n")
             database.commit()
             database.close()
-            return ("THE DATA IS SUCCESSFULLY RETRIEVED")
+            return(simplejson.dumps(student_details))
+            #return ("THE DATA IS SUCCESSFULLY RETRIEVED")
         except:
             database.rollback()
             database.close()
