@@ -23,16 +23,10 @@ def get_data():
                     'FIRSTNAME' : row[1],
                     'LASTNAME' : row[2],
                     'PHONE NUMBER':row[3]}
-                student_details.append(student_details)    
-            #for row in records:
-            #    print("SID = ", row[0], )
-            #    print("FIRSTNAME = ", row[1])
-            #    print("LASTNAME  = ", row[2])
-            #    print("PHONE NUMBER  = ", row[3], "\n")
+                student_details.append(student_details)
             database.commit()
             database.close()
             return(simplejson.dumps(student_details))
-            #return ("THE DATA IS SUCCESSFULLY RETRIEVED")
         except:
             database.rollback()
             database.close()
@@ -57,13 +51,18 @@ def get_specific():
             if(details==None):
                 print("no corrosponding SID in the table")
             else:
-                print("SID = ", details[0], )
-                print("FIRSTNAME = ", details[1])
-                print("LASTNAME  = ", details[2])
-                print("PHONE NUMBER  = ", details[3], "\n")
+                return([{
+                    'SID' : details[0],
+                    'FIRSTNAME' : details[1],
+                    'LASTNAME' : details[2],
+                    'PHONE NUMBER':details[3]}])
+                #print("SID = ", details[0], )
+                #print("FIRSTNAME = ", details[1])
+                #print("LASTNAME  = ", details[2])
+                #print("PHONE NUMBER  = ", details[3], "\n")
             database.commit()
             database.close()
-            return ("The corrosponding details are correctly retrieved from the table")
+            #return ("The corrosponding details are correctly retrieved from the table")
         except:
             database.rollback()
             database.close()
@@ -77,12 +76,12 @@ def insert_data():
         database=sqlite3.connect('student.db')
         cur=database.cursor()
         try:
-            data=request.json
+            details=request.json
             cur=database.cursor()
-            if "sid" not in data or "lastname" not in data or "firstname" not in data or "phonenumber" not in data:
+            if "sid" not in details or "lastname" not in details or "firstname" not in details or "phonenumber" not in details:
                 return("All parameters are not passed in the request")
             try:
-                cur.execute("INSERT INTO STUDENT VALUES({},'{}','{}',{});".format(int(data["sid"]),data["firstname"],data["lastname"],int(data["phonenumber"])))
+                cur.execute("INSERT INTO STUDENT VALUES({},'{}','{}',{});".format(int(details["sid"]),details["firstname"],details["lastname"],int(details["phonenumber"])))
             except:
                 print("Data is not in the format")
                 return("error while inserting the entry to the table")
@@ -103,14 +102,14 @@ def delete_specific():
         database=sqlite3.connect('student.db')
         cur=database.cursor()
         try:
-            data=request.json
+            details=request.json
             cur=database.cursor()
-            cur.execute("DELETE  FROM STUDENT WHERE SID={}".format(data["sid"]))
+            cur.execute("DELETE  FROM STUDENT WHERE SID={}".format(details["sid"]))
             while(True):
-                details=cur.fetchone()
-                if details==None:
+                detail=cur.fetchone()
+                if detail==None:
                     break
-                print(details)
+                print(detail)
             database.commit()
             database.close()
             return ("ENTRY IN DELETED FROM THE TABLE")
@@ -126,7 +125,6 @@ def update_specific():
     if request.method=="PUT":
         database=sqlite3.connect('student.db')
         cur=database.cursor()
-        print("hello")
         try:
             data=request.json
             cur=database.cursor()
